@@ -11,9 +11,9 @@ PT站点签到，兼容大部分 NexusPHP，不兼容任何有验证的
 
 1. 安装依赖
 青龙 → 依赖管理 → 新建
-复制
-axios
-https-proxy-agent
+复制以下依赖
+`axios
+https-proxy-agent`
 
 2.填入变量
 | 变量                 | 示例值                          | 备注                     |

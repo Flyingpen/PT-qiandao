@@ -119,6 +119,30 @@ async function sign(siteKey) {
 
   /* 全部成功也推送一次 */
   if (results.every(r => r.ok)) {
-    await push('PT 签到完成', summary);
+    /* ===== 推送函数：提到最外层，只定义一次 ===== */
+async function push(title, content) {
+  const payload = {
+    msg_type: 'text',
+    content: { text: `${title}\n${content}` }
+  };
+  try {
+    const { status, data } = await http.post(WEBHOOK_URL, payload, { timeout: 5000 });
+    console.log(`[FEISHU] 推送返回 ${status}`, data);
+  } catch (e) {
+    console.error('[FEISHU] 推送失败', e.response?.status, e.response?.data || e.message);
+  }
+}
+
+/* ===== 主流程 ===== */
+(async () => {
+  const results = [];
+  for (const key of Object.keys(sites)) results.push(await sign(key));
+
+  const summary = results.map(r => `${r.site}: ${r.ok ? '✅' : '❌'}`).join('\n');
+  console.log('\n===== 签到汇总 =====\n' + summary);
+
+  /* 无论成功还是失败都推送 */
+  await push('PT 签到结果', summary);
+})();
   }
 })();
